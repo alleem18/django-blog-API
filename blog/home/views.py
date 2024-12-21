@@ -7,8 +7,42 @@ from .serializers import BlogSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Blog
 from django.db.models import Q
+from django.core.paginator import Paginator
 
 # Create your views here.
+
+
+class PublicBlogView(APIView):
+      def get(self, request):
+        try:
+            blogs = Blog.objects.all().order_by('?')
+
+            if request.GET.get('search'):
+                search = request.GET.get('search')
+                blogs = Blog.objects.filter(Q(title__icontains = search) | Q(blog_text__icontains = search))
+
+
+            page_number = request.GET.get('page', 1)
+            paginator = Paginator(blogs, 1)
+
+            serializer = BlogSerializer(paginator.page(page_number),  many=True)
+
+            return Response({
+                'data' : serializer.data,
+                'message' : 'Blogs Fetched Succesfully'
+            }, status = status.HTTP_201_CREATED)
+        
+        except Exception as e:
+            print(e)
+
+            return Response({
+                'data': {},
+                'message': 'something went wrong'
+
+            }  , status = status.HTTP_400_BAD_REQUEST)
+        
+
+    
 
 class BlogView(APIView):
     permission_classes = [IsAuthenticated]

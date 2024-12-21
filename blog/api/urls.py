@@ -6,5 +6,5 @@ from home.views import BlogView
  
 urlpatterns = [
     path('account/', include('account.urls')),
-    path('home/blog/', include('home.urls')),
+    path('home/', include('home.urls')),
 ]
