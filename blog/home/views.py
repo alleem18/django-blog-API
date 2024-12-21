@@ -6,6 +6,7 @@ from rest_framework import status
 from .serializers import BlogSerializer
 from rest_framework_simplejwt.authentication import JWTAuthentication
 from .models import Blog
+from django.db.models import Q
 
 # Create your views here.
 
@@ -17,11 +18,16 @@ class BlogView(APIView):
     def get(self, request):
         try:
             blogs = Blog.objects.filter(user = request.user)
+
+            if request.GET.get('search'):
+                search = request.GET.get('search')
+                blogs = Blog.objects.filter(Q(title__icontains = search) | Q(blog_text__icontains = search))
+
             serializer = BlogSerializer(blogs, many=True)
 
             return Response({
                 'data' : serializer.data,
-                'message' : 'blogs fetched successfully'
+                'message' : 'No Blogs Found'
             }, status= status.HTTP_201_CREATED)
         
         except Exception as e:
