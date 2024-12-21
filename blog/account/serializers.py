@@ -6,8 +6,8 @@ class RegisterSerializer(serializers.Serializer):
     first_name = serializers.CharField()
     last_name = serializers.CharField()
 
-    username = serializers.CharField(max_length=255)
-    password = serializers.CharField(max_length=255)
+    username = serializers.CharField()
+    password = serializers.CharField()
 
     def validate(self, data):
 
@@ -24,6 +24,6 @@ class RegisterSerializer(serializers.Serializer):
         )
         user.set_password(validated_data['password'])
 
-        return 
+        return validated_data
 
                                 
